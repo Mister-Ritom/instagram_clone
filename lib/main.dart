@@ -9,7 +9,7 @@ import 'package:instagram_clone/riverpod/user_notifier.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Database.initialize();
-  runApp(const InstagramApp());
+  runApp(ProviderScope(child: const InstagramApp()));
 }
 
 class InstagramApp extends StatelessWidget {
@@ -190,7 +190,7 @@ class InstagramApp extends StatelessWidget {
       theme: _buildBaseTheme(Brightness.light),
       darkTheme: _buildBaseTheme(Brightness.dark),
       themeMode: ThemeMode.system,
-      home: const ProviderScope(child: InstagramDemoPage()),
+      home: const InstagramDemoPage(),
     );
   }
 }
@@ -201,7 +201,7 @@ class InstagramDemoPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProvider);
-    if (user != null) return const HomeScreen();
+    if (user != null) return HomeScreen();
     return const AuthScreen();
   }
 }

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class UtilWidgets {
   //Used in auth screens as that has different styles and roundness
   static Widget getOutlinedButton(
-    VoidCallback onPressed,
+    VoidCallback? onPressed,
     String text,
     BuildContext context, {
     Color? foregroundColor,

@@ -20,7 +20,7 @@ class Database {
   // Initialize the Supabase client only once
   static Future<void> initialize() async {
     String url = "https://lrccpjjnbbnccwtahtqp.supabase.co";
-    String anonKey = "Should not be used";
+    String anonKey = "sb_publishable_fkxAEEfDHkLIoGn9Lvp-aQ_qu3Gthn3";
 
     final supabase = await Supabase.initialize(url: url, anonKey: anonKey);
     _client = supabase.client;

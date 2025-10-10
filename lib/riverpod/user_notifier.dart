@@ -36,25 +36,26 @@ class UserNotifier extends StateNotifier<User?> {
   }
 
   /// Signup user
-  Future<User?> createUser(String email, String password) async {
+  Future<bool> createUser(String email, String password) async {
     try {
       final res = await auth.signUp(email: email, password: password);
       if (res.session != null) {
         state = res.user;
         log('User signed up: ${res.user!.email}', name: 'UserNotifier');
+        return true;
       } else {
         log(
           'Signup complete, email confirmation may be required',
           name: 'UserNotifier',
         );
+        return false;
       }
-      return res.user;
     } on AuthException catch (e) {
       log('Signup error: ${e.message}', name: 'UserNotifier', error: e);
-      return null;
+      return false;
     } catch (e) {
       log('Unexpected signup error', name: 'UserNotifier', error: e);
-      return null;
+      return false;
     }
   }
 
