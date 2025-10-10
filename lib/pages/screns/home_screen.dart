@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:iconic/iconic.dart';
 import 'package:instagram_clone/pages/screns/child_pages/discover_page.dart';
 import 'package:instagram_clone/pages/screns/child_pages/home_page.dart';
 import 'package:instagram_clone/pages/screns/child_pages/profile_page.dart';
@@ -118,11 +119,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         currentIndex: currentNavIndex,
         type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: ""),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: ""),
-          BottomNavigationBarItem(icon: Icon(Icons.add), label: ""),
-          BottomNavigationBarItem(icon: Icon(Icons.video_call), label: ""),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: ""),
+          BottomNavigationBarItem(icon: Icon(Iconic.home), label: ""),
+          BottomNavigationBarItem(icon: Icon(Iconic.search), label: ""),
+          BottomNavigationBarItem(icon: Icon(Iconic.add), label: ""),
+          BottomNavigationBarItem(icon: Icon(Iconic.tablet), label: ""),
+          BottomNavigationBarItem(icon: Icon(Iconic.user), label: ""),
         ],
         onTap: (index) {
           if (index == 2) {
