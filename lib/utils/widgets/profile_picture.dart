@@ -11,7 +11,7 @@ class ProfilePicture extends StatelessWidget {
     if (img != null) {
       return CircleAvatar(foregroundImage: NetworkImage(img!));
     } else {
-      return ClipOval(child: Icon(Iconic.user_straight));
+      return Icon(Iconic.user_straight, size: 32);
     }
   }
 }

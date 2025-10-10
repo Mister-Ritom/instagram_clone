@@ -5,6 +5,7 @@ import 'package:iconic/iconic.dart';
 import 'package:instagram_clone/pages/auth/login_screen.dart';
 import 'package:instagram_clone/pages/auth/register_email_screen.dart';
 import 'package:instagram_clone/utils/widgets/profile_picture.dart';
+import 'package:instagram_clone/utils/widgets/util_vars.dart';
 import 'package:instagram_clone/utils/widgets/util_widgets.dart';
 
 class AuthScreen extends StatelessWidget {
@@ -22,7 +23,7 @@ class AuthScreen extends StatelessWidget {
             children: [
               Text("English (US)"),
               SizedBox(height: 32),
-              Image.asset("assets/icons/app_icon.png", width: 96, height: 96),
+              Image.asset(UtilVars.appIcon, width: 96, height: 96),
               SizedBox(height: 16),
               //A list of saved logins... not implemented yet
               SizedBox(
@@ -73,7 +74,7 @@ class AuthScreen extends StatelessWidget {
 
               SizedBox(height: 8),
               Text(
-                "Ritom",
+                UtilVars.copyright,
                 style: Theme.of(
                   context,
                 ).textTheme.labelLarge?.copyWith(color: Colors.grey),
@@ -102,6 +103,7 @@ class AuthScreen extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
       child: ListTile(
         contentPadding: EdgeInsets.zero,
+        onTap: () {},
         leading: SizedBox(
           width: 42,
           height: 42,

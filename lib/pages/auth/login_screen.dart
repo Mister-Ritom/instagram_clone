@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/pages/auth/register_email_screen.dart';
+import 'package:instagram_clone/utils/widgets/util_vars.dart';
 import 'package:instagram_clone/utils/widgets/util_widgets.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -18,7 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Column(
         children: [
           SizedBox(height: 128),
-          Image.asset("assets/icons/app_icon.png", width: 96, height: 96),
+          Image.asset(UtilVars.appIcon, width: 96, height: 96),
           SizedBox(height: 48),
           TextField(
             decoration: InputDecoration(
@@ -63,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
           SizedBox(height: 8),
           Text(
-            "Ritom",
+            UtilVars.copyright,
             style: Theme.of(
               context,
             ).textTheme.labelLarge?.copyWith(color: Colors.grey),
