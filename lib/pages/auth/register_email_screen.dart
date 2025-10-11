@@ -109,39 +109,48 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            TextFormField(
-              controller: _emailController,
-              validator: _validateEmail,
-              decoration: const InputDecoration(
-                labelText: "Email",
-                fillColor: Colors.transparent,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: TextFormField(
+                controller: _emailController,
+                validator: _validateEmail,
+                decoration: const InputDecoration(
+                  labelText: "Email",
+                  fillColor: Colors.transparent,
+                ),
               ),
             ),
             const SizedBox(height: 8),
-            TextFormField(
-              controller: _passwordController,
-              validator: _validatePassword,
-              obscureText: _hidePassword,
-              decoration: InputDecoration(
-                labelText: "Password",
-                fillColor: Colors.transparent,
-                suffixIcon: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _hidePassword = !_hidePassword;
-                    });
-                  },
-                  icon: Icon(_hidePassword ? Iconic.eye : Iconic.eye_crossed),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: TextFormField(
+                controller: _passwordController,
+                validator: _validatePassword,
+                obscureText: _hidePassword,
+                decoration: InputDecoration(
+                  labelText: "Password",
+                  fillColor: Colors.transparent,
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _hidePassword = !_hidePassword;
+                      });
+                    },
+                    icon: Icon(_hidePassword ? Iconic.eye : Iconic.eye_crossed),
+                  ),
                 ),
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              "You may get emails from us for security and login purposes",
+            Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: const Text(
+                "You may get emails from us for security and login purposes",
+              ),
             ),
             const SizedBox(height: 16),
             SizedBox(
-              width: MediaQuery.of(context).size.width,
+              width: MediaQuery.of(context).size.width - 32,
               height: 48,
               child: UtilWidgets.getOutlinedButton(
                 _isSubmitting ? null : _createAccount,
@@ -154,7 +163,7 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
             ),
             const SizedBox(height: 8),
             SizedBox(
-              width: MediaQuery.of(context).size.width,
+              width: MediaQuery.of(context).size.width - 32,
               height: 48,
               child: UtilWidgets.getOutlinedButton(
                 () {},
@@ -176,6 +185,7 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
                 ).textTheme.bodyMedium?.copyWith(color: Colors.blue),
               ),
             ),
+            SizedBox(height: 8),
           ],
         ),
       ),

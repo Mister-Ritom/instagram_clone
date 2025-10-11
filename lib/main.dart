@@ -114,6 +114,36 @@ class InstagramApp extends StatelessWidget {
         ),
       ),
 
+      iconButtonTheme: IconButtonThemeData(
+        style: ButtonStyle(
+          foregroundColor: WidgetStateProperty.resolveWith<Color?>((states) {
+            if (states.contains(WidgetState.disabled)) return divider;
+            return primary; // matches your other buttons' foreground color
+          }),
+          backgroundColor: WidgetStateProperty.resolveWith<Color?>((states) {
+            if (states.contains(WidgetState.pressed)) {
+              return primary.withValues(alpha: 0.1);
+            }
+            return Colors.transparent; // default background
+          }),
+          overlayColor: WidgetStateProperty.resolveWith<Color?>((states) {
+            if (states.contains(WidgetState.hovered) ||
+                states.contains(WidgetState.focused) ||
+                states.contains(WidgetState.pressed)) {
+              return primary.withValues(alpha: 0.08);
+            }
+            return null;
+          }),
+          padding: WidgetStateProperty.all(
+            const EdgeInsets.all(12),
+          ), // similar to your buttons
+          shape: WidgetStateProperty.all(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          ),
+          iconSize: WidgetStateProperty.all(24),
+        ),
+      ),
+
       // 🪧 Card Theme
       cardTheme: CardTheme(
         color: surface,

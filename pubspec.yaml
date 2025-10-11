@@ -38,6 +38,10 @@ dependencies:
   iconic: ^0.1.0
   supabase_flutter: ^2.10.3
   flutter_riverpod: ^3.0.3
+  photo_manager: ^3.7.1
+  camera: ^0.11.2
+  path_provider: ^2.1.5
+  video_player: ^2.10.0
 
 dev_dependencies:
   flutter_test:
