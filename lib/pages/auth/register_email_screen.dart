@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconic/iconic.dart';
 import 'package:instagram_clone/pages/auth/login_screen.dart';
 import 'package:instagram_clone/riverpod/user_notifier.dart';
-import 'package:instagram_clone/utils/widgets/util_widgets.dart';
+import 'package:instagram_clone/utils/reusable/util_widgets.dart';
 
 class RegisterEmailScreen extends StatefulWidget {
   const RegisterEmailScreen({super.key});

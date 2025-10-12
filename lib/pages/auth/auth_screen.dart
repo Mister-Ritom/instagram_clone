@@ -5,8 +5,8 @@ import 'package:iconic/iconic.dart';
 import 'package:instagram_clone/pages/auth/login_screen.dart';
 import 'package:instagram_clone/pages/auth/register_email_screen.dart';
 import 'package:instagram_clone/utils/widgets/profile_picture.dart';
-import 'package:instagram_clone/utils/widgets/util_vars.dart';
-import 'package:instagram_clone/utils/widgets/util_widgets.dart';
+import 'package:instagram_clone/utils/reusable/util_vars.dart';
+import 'package:instagram_clone/utils/reusable/util_widgets.dart';
 
 class AuthScreen extends StatelessWidget {
   const AuthScreen({super.key});

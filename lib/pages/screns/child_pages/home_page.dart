@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconic/iconic.dart';
-import 'package:instagram_clone/utils/widgets/util_vars.dart';
+import 'package:instagram_clone/utils/reusable/util_vars.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

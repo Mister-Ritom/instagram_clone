@@ -79,7 +79,7 @@ class _CameraScreenState extends State<CameraScreen>
     _currentCamera = camera;
     _controller = CameraController(
       _currentCamera!,
-      ResolutionPreset.high,
+      ResolutionPreset.ultraHigh,
       enableAudio: true,
     );
 
@@ -184,42 +184,6 @@ class _CameraScreenState extends State<CameraScreen>
       context,
       MaterialPageRoute(
         builder: (_) => PreviewScreen(filePath: path, isVideo: isVideo),
-      ),
-    );
-  }
-
-  Widget _buildRecordingIndicator() {
-    return AnimatedOpacity(
-      opacity: _isRecording ? 1.0 : 0.0,
-      duration: const Duration(milliseconds: 200),
-      child: Positioned(
-        top: 50,
-        right: 20,
-        child: Row(
-          children: [
-            AnimatedOpacity(
-              opacity: _showDot ? 1 : 0,
-              duration: const Duration(milliseconds: 300),
-              child: Container(
-                width: 10,
-                height: 10,
-                decoration: const BoxDecoration(
-                  color: Colors.redAccent,
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-            const SizedBox(width: 6),
-            Text(
-              _recordingDuration.formattedTime,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -354,16 +318,51 @@ class _CameraScreenState extends State<CameraScreen>
         body: Center(child: CircularProgressIndicator(color: Colors.white)),
       );
     }
-
     return Scaffold(
-      backgroundColor: Colors.black,
       body: Stack(
         children: [
-          Positioned.fill(child: CameraPreview(_controller!)),
-
-          // Recording Indicator
-          _buildRecordingIndicator(),
-
+          // Camera preview
+          Positioned.fill(
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: SizedBox(
+                width: _controller!.value.previewSize!.height,
+                height: _controller!.value.previewSize!.width,
+                child: CameraPreview(_controller!),
+              ),
+            ),
+          ),
+          if (_isRecording)
+            Positioned(
+              top: 50,
+              right: 20,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AnimatedOpacity(
+                    opacity: _showDot ? 1 : 0,
+                    duration: const Duration(milliseconds: 300),
+                    child: Container(
+                      width: 10,
+                      height: 10,
+                      decoration: const BoxDecoration(
+                        color: Colors.redAccent,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    _recordingDuration.formattedTime,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           // Bottom Controls
           Positioned(
             bottom: 40,

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:instagram_clone/pages/auth/register_email_screen.dart';
 import 'package:instagram_clone/riverpod/user_notifier.dart';
-import 'package:instagram_clone/utils/widgets/util_vars.dart';
-import 'package:instagram_clone/utils/widgets/util_widgets.dart';
+import 'package:instagram_clone/utils/reusable/util_vars.dart';
+import 'package:instagram_clone/utils/reusable/util_widgets.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

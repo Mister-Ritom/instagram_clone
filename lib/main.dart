@@ -147,7 +147,7 @@ class InstagramApp extends StatelessWidget {
       // 🪧 Card Theme
       cardTheme: CardTheme(
         color: surface,
-        elevation: 0,
+        elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: const EdgeInsets.all(8),
       ),
