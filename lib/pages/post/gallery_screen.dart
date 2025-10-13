@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:instagram_clone/pages/post/camera_screen.dart';
+import 'package:instagram_clone/pages/post/post_mode.dart';
 import 'package:instagram_clone/pages/post/preview_screen.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'dart:typed_data';
 
 class GalleryScreen extends StatefulWidget {
-  final ScrollController? scrollController; // optional external controller
+  final ScrollController? scrollController;
+  final Function(String filePath, bool isVideo)? callback;
+  final PostMode mode;
 
-  const GalleryScreen({super.key, this.scrollController});
+  const GalleryScreen({
+    super.key,
+    this.scrollController,
+    required this.mode,
+    this.callback,
+  });
 
   @override
   State<GalleryScreen> createState() => _GalleryScreenState();
@@ -86,12 +95,21 @@ class _GalleryScreenState extends State<GalleryScreen> {
   }
 
   void _navigateToPreview(String path, {required bool isVideo}) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => PreviewScreen(filePath: path, isVideo: isVideo),
-      ),
-    );
+    if (widget.callback != null) {
+      widget.callback!(path, isVideo);
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder:
+              (_) => PreviewScreen(
+                filePath: path,
+                isVideo: isVideo,
+                mode: widget.mode,
+              ),
+        ),
+      );
+    }
   }
 
   Widget buildMediaItem(AssetEntity asset) {
@@ -152,27 +170,46 @@ class _GalleryScreenState extends State<GalleryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isSheet = widget.scrollController != null;
-
-    return Scaffold(
-      appBar: isSheet ? null : AppBar(title: const Text('Gallery')),
-      body: GridView.builder(
-        controller: _controller,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          crossAxisSpacing: 4,
-          mainAxisSpacing: 4,
-          childAspectRatio: 2 / 3,
-        ),
-        itemCount: mediaItems.length + (hasMore ? 1 : 0),
-        itemBuilder: (_, index) {
-          if (index < mediaItems.length) {
-            return buildMediaItem(mediaItems[index]);
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
+    return GridView.builder(
+      controller: _controller,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 4,
+        mainAxisSpacing: 4,
+        childAspectRatio: 2 / 3,
       ),
+      // Add 1 for the camera icon
+      itemCount: mediaItems.length + (hasMore ? 2 : 1),
+      itemBuilder: (_, index) {
+        // 👇 First item: camera icon
+        if (index == 0) {
+          return GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => CameraScreen(mode: widget.mode),
+                ),
+              );
+            },
+            child: Container(
+              color: Colors.grey.shade900,
+              child: const Icon(
+                Icons.camera_alt_rounded,
+                color: Colors.white,
+                size: 40,
+              ),
+            ),
+          );
+        }
+
+        // 👇 Show loading indicator if last index and hasMore
+        if (index == mediaItems.length + 1 && hasMore) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        // 👇 For all other items, shift index by -1
+        return buildMediaItem(mediaItems[index - 1]);
+      },
     );
   }
 

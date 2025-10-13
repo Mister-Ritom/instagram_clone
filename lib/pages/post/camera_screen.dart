@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:instagram_clone/pages/post/post_mode.dart';
 import 'preview_screen.dart';
 
 // Utility for formatting time
@@ -14,7 +15,8 @@ extension DurationFormatter on Duration {
 }
 
 class CameraScreen extends StatefulWidget {
-  const CameraScreen({super.key});
+  final PostMode mode;
+  const CameraScreen({super.key, required this.mode});
 
   @override
   State<CameraScreen> createState() => _CameraScreenState();
@@ -183,7 +185,12 @@ class _CameraScreenState extends State<CameraScreen>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => PreviewScreen(filePath: path, isVideo: isVideo),
+        builder:
+            (_) => PreviewScreen(
+              filePath: path,
+              isVideo: isVideo,
+              mode: widget.mode,
+            ),
       ),
     );
   }

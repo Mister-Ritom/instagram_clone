@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:iconic/iconic.dart';
+import 'package:instagram_clone/pages/post/add_to_post_screen.dart';
 import 'package:instagram_clone/pages/post/camera_screen.dart';
 import 'package:instagram_clone/pages/post/gallery_screen.dart';
+import 'package:instagram_clone/pages/post/post_mode.dart';
 import 'package:instagram_clone/utils/widgets/horizontal_scroll_selector.dart';
 
 class PostInterface extends StatefulWidget {
@@ -12,12 +14,12 @@ class PostInterface extends StatefulWidget {
 }
 
 class _PostInterfaceState extends State<PostInterface> {
+  PostMode _currentMode = PostMode.story;
   void _openGallery() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
-      backgroundColor: Colors.transparent,
       barrierColor: Colors.transparent,
       builder: (context) {
         return DraggableScrollableSheet(
@@ -46,7 +48,7 @@ class _PostInterfaceState extends State<PostInterface> {
                             icon: Icon(Iconic.cross_bold, size: 18),
                           ),
                           Text(
-                            "Add to story",
+                            "Add to ${_currentMode.displayName}",
                             style: Theme.of(context).textTheme.bodyLarge
                                 ?.copyWith(fontWeight: FontWeight.bold),
                           ),
@@ -64,7 +66,6 @@ class _PostInterfaceState extends State<PostInterface> {
                     height: 160, // enough height for card + caption
                     child: ListView(
                       scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
                       children: [
                         iconCard("Drafts", Icon(Iconic.add, size: 26)),
                         iconCard(
@@ -87,7 +88,10 @@ class _PostInterfaceState extends State<PostInterface> {
                     ),
                   ),
                   Expanded(
-                    child: GalleryScreen(scrollController: scrollController),
+                    child: GalleryScreen(
+                      scrollController: scrollController,
+                      mode: _currentMode,
+                    ),
                   ),
                 ],
               ),
@@ -100,15 +104,17 @@ class _PostInterfaceState extends State<PostInterface> {
 
   Widget iconCard(String text, Widget iconOrImage) {
     return Container(
-      width: 120, // card width
-      margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+      width: 120,
+      margin: const EdgeInsets.only(bottom: 8, left: 8),
       child: Card(
-        elevation: 4, // visible shadow
+        elevation: 8,
+        color: Colors.grey.shade900,
+        margin: null,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Small icon/image
               SizedBox(
@@ -141,7 +147,10 @@ class _PostInterfaceState extends State<PostInterface> {
     return Scaffold(
       body: Column(
         children: [
-          SizedBox(height: size.height - 96, child: CameraScreen()),
+          SizedBox(
+            height: size.height - 96,
+            child: CameraScreen(mode: _currentMode),
+          ),
           Container(
             height: 96,
             margin: EdgeInsets.symmetric(horizontal: 12),
@@ -154,9 +163,21 @@ class _PostInterfaceState extends State<PostInterface> {
                   width: 300,
                   child: HorizontalScrollSelector(
                     initialIndex: 1,
-                    items: const [Text("Post"), Text("Story"), Text("Reel")],
+                    items:
+                        PostMode.values
+                            .map((e) => Text(e.displayName))
+                            .toList(),
                     onSelectedChanged: (index) {
-                      debugPrint("Selected: $index");
+                      setState(() {
+                        _currentMode = PostMode.values[index];
+                      });
+                      if (index == 0) {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => AddToPostScreen(),
+                          ),
+                        );
+                      }
                     },
                   ),
                 ),
