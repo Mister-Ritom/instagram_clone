@@ -65,7 +65,7 @@ class _RegisterEmailScreenState extends State<RegisterEmailScreen> {
           context,
         ).showSnackBar(SnackBar(content: Text("Account created for $email")));
         //Only pop as riverpod would change auth screen to home
-        Navigator.pop(context);
+        Navigator.popUntil(context, (route) => route.isFirst);
       }
     } catch (e) {
       if (mounted && context.mounted) {

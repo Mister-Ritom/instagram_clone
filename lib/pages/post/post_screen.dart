@@ -3,7 +3,6 @@ import 'package:iconic/iconic.dart';
 import 'package:instagram_clone/pages/post/gallery_screen.dart';
 import 'package:instagram_clone/pages/post/post_mode.dart';
 import 'package:instagram_clone/pages/post/preview_screen.dart';
-import 'package:instagram_clone/pages/screns/home_screen.dart';
 import 'package:instagram_clone/utils/reusable/util_vars.dart';
 
 class PostScreen extends StatefulWidget {

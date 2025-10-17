@@ -47,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
           context,
         ).showSnackBar(SnackBar(content: Text("Logged in with $email")));
         //Only pop as riverpod would change auth screen to home
-        Navigator.pop(context);
+        Navigator.popUntil(context, (route) => route.isFirst);
       }
     } catch (e) {
       if (mounted && context.mounted) {
