@@ -6,14 +6,14 @@ import 'package:instagram_clone/pages/post/preview_screen.dart';
 import 'package:instagram_clone/pages/screns/home_screen.dart';
 import 'package:instagram_clone/utils/reusable/util_vars.dart';
 
-class AddToPostScreen extends StatefulWidget {
-  const AddToPostScreen({super.key});
+class PostScreen extends StatefulWidget {
+  const PostScreen({super.key});
 
   @override
-  State<AddToPostScreen> createState() => _AddToPostScreenState();
+  State<PostScreen> createState() => _PostScreenState();
 }
 
-class _AddToPostScreenState extends State<AddToPostScreen> {
+class _PostScreenState extends State<PostScreen> {
   bool _isPreview = true;
   String? _currentPath;
   bool _isVideo = false;
@@ -21,6 +21,27 @@ class _AddToPostScreenState extends State<AddToPostScreen> {
   final ScrollController _scrollController = ScrollController();
   final GlobalKey _previewKey = GlobalKey();
   final TextEditingController _captionController = TextEditingController();
+
+  // GlobalKey for the GalleryScreen to access its state
+  final GlobalKey<GalleryScreenState> _galleryKey =
+      GlobalKey<GalleryScreenState>();
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Listen to parent scroll for infinite loading
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+              _scrollController.position.maxScrollExtent - 300 &&
+          _galleryKey.currentState != null &&
+          _galleryKey.currentState!.hasMore &&
+          !_galleryKey.currentState!.isLoading) {
+        // Trigger GalleryScreen to fetch more media
+        _galleryKey.currentState!.fetchMoreMedia();
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -35,7 +56,7 @@ class _AddToPostScreenState extends State<AddToPostScreen> {
       if (context != null) {
         Scrollable.ensureVisible(
           context,
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
           alignment: 0.0, // scrolls to top of preview
         );
@@ -53,33 +74,32 @@ class _AddToPostScreenState extends State<AddToPostScreen> {
             pinned: true,
             floating: true,
             leading: IconButton(
-              icon: Icon(Iconic.cross),
+              icon: const Icon(Iconic.cross),
               onPressed: () {
                 showDialog(
                   context: context,
                   builder:
                       (context) => AlertDialog(
-                        title: Text("Discard Post?"),
+                        title: const Text("Discard Post?"),
                         actions: [
                           TextButton(
                             onPressed: () {
-                              Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(builder: (_) => HomeScreen()),
-                                (route) => false,
-                              );
+                              Navigator.of(
+                                context,
+                              ).popUntil((route) => route.isFirst);
                             },
-                            child: Text("Discard"),
+                            child: const Text("Discard"),
                           ),
                           TextButton(
                             onPressed: () => Navigator.pop(context),
-                            child: Text("Continue"),
+                            child: const Text("Continue"),
                           ),
                         ],
                       ),
                 );
               },
             ),
-            title: Text("New Post"),
+            title: const Text("New Post"),
             actions:
                 _isPreview
                     ? [
@@ -89,34 +109,33 @@ class _AddToPostScreenState extends State<AddToPostScreen> {
                             _isPreview = false;
                           });
                         },
-                        child: Text("Next"),
+                        child: const Text("Next"),
                       ),
                     ]
                     : null,
           ),
 
-          // Preview Screen
-          if (_currentPath != null)
-            SliverToBoxAdapter(
-              child: SizedBox(
-                key: _previewKey,
-                height: 300,
-                child: PreviewScreen(
-                  key: ValueKey(_currentPath),
-                  filePath: _currentPath,
-                  isVideo: _isVideo,
-                  mode: PostMode.post,
-                ),
+          // Preview section
+          SliverToBoxAdapter(
+            child: SizedBox(
+              key: _previewKey,
+              height: 300,
+              child: PreviewScreen(
+                key: ValueKey(_currentPath),
+                filePath: _currentPath,
+                isVideo: _isVideo,
               ),
             ),
+          ),
 
           // Gallery or Post details
           SliverToBoxAdapter(
             child:
                 _isPreview
                     ? GalleryScreen(
+                      key: _galleryKey, // key for accessing state
                       mode: PostMode.post,
-                      scrollController: _scrollController,
+                      scrollable: false, // parent handles scroll
                       callback: (filePath, isVideo) {
                         setState(() {
                           _currentPath = filePath;
@@ -131,22 +150,22 @@ class _AddToPostScreenState extends State<AddToPostScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           TextField(
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               hintText: "Add a caption",
                             ),
                             controller: _captionController,
                           ),
-                          Divider(),
+                          const Divider(),
                           rowWidget("Add audio", Iconic.music),
                           rowWidget("Tag people", Iconic.user),
                           rowWidget("Add location", Iconic.map),
-                          Divider(),
+                          const Divider(),
                           rowWidget("Audience", Iconic.eye),
                           rowWidget(
                             "Also share on",
                             Iconic.chat_arrow_down_straight,
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: () async {
                               if (_currentPath == null) return;
@@ -164,7 +183,7 @@ class _AddToPostScreenState extends State<AddToPostScreen> {
                                 );
                               }
                             },
-                            child: Text("Share"),
+                            child: const Text("Share"),
                           ),
                         ],
                       ),

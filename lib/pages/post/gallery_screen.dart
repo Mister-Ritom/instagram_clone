@@ -1,27 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/pages/post/camera_screen.dart';
 import 'package:instagram_clone/pages/post/post_mode.dart';
-import 'package:instagram_clone/pages/post/preview_screen.dart';
+import 'package:instagram_clone/pages/post/story_screen.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'dart:typed_data';
 
 class GalleryScreen extends StatefulWidget {
-  final ScrollController? scrollController;
   final Function(String filePath, bool isVideo)? callback;
   final PostMode mode;
 
+  /// When false, GridView disables its own scrolling and relies on parent scroll.
+  final bool scrollable;
+
+  /// Optional: callback to notify parent when more items should be loaded
+  final VoidCallback? onLoadMore;
+
   const GalleryScreen({
     super.key,
-    this.scrollController,
     required this.mode,
     this.callback,
+    this.scrollable = true,
+    this.onLoadMore,
   });
 
   @override
-  State<GalleryScreen> createState() => _GalleryScreenState();
+  State<GalleryScreen> createState() => GalleryScreenState();
 }
 
-class _GalleryScreenState extends State<GalleryScreen> {
+class GalleryScreenState extends State<GalleryScreen> {
   List<AssetEntity> mediaItems = [];
   bool isLoading = true;
   int page = 0;
@@ -29,27 +35,25 @@ class _GalleryScreenState extends State<GalleryScreen> {
   bool hasMore = true;
   late AssetPathEntity album;
 
-  ScrollController? _internalController;
-
-  ScrollController get _controller =>
-      widget.scrollController ?? _internalController!;
+  late ScrollController _internalController;
 
   @override
   void initState() {
     super.initState();
-    _internalController =
-        widget.scrollController ?? ScrollController(); // only create if null
+    _internalController = ScrollController();
     fetchInitialMedia();
 
-    // Infinite scroll listener
-    _controller.addListener(() {
-      if (_controller.position.pixels >=
-              _controller.position.maxScrollExtent - 300 &&
-          hasMore &&
-          !isLoading) {
-        fetchMoreMedia();
-      }
-    });
+    // Infinite scroll listener only if scrollable internally
+    if (widget.scrollable) {
+      _internalController.addListener(() {
+        if (_internalController.position.pixels >=
+                _internalController.position.maxScrollExtent - 300 &&
+            hasMore &&
+            !isLoading) {
+          fetchMoreMedia();
+        }
+      });
+    }
   }
 
   Future<void> fetchInitialMedia() async {
@@ -86,6 +90,11 @@ class _GalleryScreenState extends State<GalleryScreen> {
       isLoading = false;
       if (newItems.length < pageSize) hasMore = false;
     });
+
+    // Notify parent if provided
+    if (!widget.scrollable && hasMore && widget.onLoadMore != null) {
+      widget.onLoadMore!();
+    }
   }
 
   String _formatVideoDuration(int seconds) {
@@ -101,12 +110,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder:
-              (_) => PreviewScreen(
-                filePath: path,
-                isVideo: isVideo,
-                mode: widget.mode,
-              ),
+          builder: (_) => StoryScreen(filePath: path, isVideo: isVideo),
         ),
       );
     }
@@ -171,19 +175,22 @@ class _GalleryScreenState extends State<GalleryScreen> {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
-      controller: _controller,
+      controller: widget.scrollable ? _internalController : null,
+      physics:
+          widget.scrollable
+              ? null
+              : const NeverScrollableScrollPhysics(), // disable internal scroll if parent scrolls
+      shrinkWrap: true,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
         crossAxisSpacing: 4,
         mainAxisSpacing: 4,
         childAspectRatio: 2 / 3,
       ),
-      shrinkWrap: true,
-      // Add 1 for the camera icon
       itemCount: mediaItems.length + (hasMore ? 2 : 1),
       itemBuilder: (_, index) {
-        // 👇 First item: camera icon
         if (index == 0) {
+          // Camera Icon
           return GestureDetector(
             onTap: () {
               Navigator.of(context).push(
@@ -203,12 +210,12 @@ class _GalleryScreenState extends State<GalleryScreen> {
           );
         }
 
-        // 👇 Show loading indicator if last index and hasMore
+        // Show loading indicator if last index
         if (index == mediaItems.length + 1 && hasMore) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        // 👇 For all other items, shift index by -1
+        // Shift index by -1 for actual media
         return buildMediaItem(mediaItems[index - 1]);
       },
     );
@@ -216,9 +223,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
 
   @override
   void dispose() {
-    if (widget.scrollController == null) {
-      _internalController?.dispose(); // only dispose internal one
-    }
+    _internalController.dispose();
     super.dispose();
   }
 }

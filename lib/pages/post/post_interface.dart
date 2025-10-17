@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconic/iconic.dart';
-import 'package:instagram_clone/pages/post/add_to_post_screen.dart';
+import 'package:instagram_clone/pages/post/post_screen.dart';
 import 'package:instagram_clone/pages/post/camera_screen.dart';
 import 'package:instagram_clone/pages/post/gallery_screen.dart';
 import 'package:instagram_clone/pages/post/post_mode.dart';
@@ -88,10 +88,7 @@ class _PostInterfaceState extends State<PostInterface> {
                     ),
                   ),
                   Expanded(
-                    child: GalleryScreen(
-                      scrollController: scrollController,
-                      mode: _currentMode,
-                    ),
+                    child: GalleryScreen(scrollable: true, mode: _currentMode),
                   ),
                 ],
               ),
@@ -173,9 +170,7 @@ class _PostInterfaceState extends State<PostInterface> {
                       });
                       if (index == 0) {
                         Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => AddToPostScreen(),
-                          ),
+                          MaterialPageRoute(builder: (context) => PostScreen()),
                         );
                       }
                     },

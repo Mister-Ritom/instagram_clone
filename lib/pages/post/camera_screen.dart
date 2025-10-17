@@ -3,7 +3,8 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:instagram_clone/pages/post/post_mode.dart';
-import 'preview_screen.dart';
+import 'package:instagram_clone/pages/post/post_screen.dart';
+import 'package:instagram_clone/pages/post/story_screen.dart';
 
 // Utility for formatting time
 extension DurationFormatter on Duration {
@@ -182,17 +183,11 @@ class _CameraScreenState extends State<CameraScreen>
   }
 
   void _navigateToPreview(String path, {required bool isVideo}) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder:
-            (_) => PreviewScreen(
-              filePath: path,
-              isVideo: isVideo,
-              mode: widget.mode,
-            ),
-      ),
-    );
+    Widget screen =
+        widget.mode == PostMode.story
+            ? StoryScreen(filePath: path, isVideo: isVideo)
+            : PostScreen();
+    Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
   }
 
   Widget _buildCameraLensButton(
