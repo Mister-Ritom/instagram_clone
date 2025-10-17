@@ -1,13 +1,10 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconic/iconic.dart';
-import 'package:instagram_clone/core/supabase_client.dart';
 import 'package:instagram_clone/models/post_model.dart';
 import 'package:instagram_clone/pages/post/post_mode.dart';
-import 'package:instagram_clone/riverpod/upload_notifier.dart';
+import 'package:instagram_clone/utils/reusable/util_vars.dart';
 import 'package:instagram_clone/utils/widgets/profile_picture.dart';
 import 'package:video_player/video_player.dart';
 
@@ -53,34 +50,18 @@ class _PreviewScreenState extends State<PreviewScreen> {
     return ActionIcon(onClick: onClick, icon: icon);
   }
 
-  void uploadPost() async {
-    if (widget.filePath == null) return;
-    ProviderScope.containerOf(context)
-        .read(uploadNotifier.notifier)
-        .uploadFile(
-          file: File(widget.filePath!),
-          mode: widget.mode,
-          isVideoPost: widget.isVideo,
-          nextTask: (fileUrl) async {
-            try {
-              final supabase = Database.client;
-              final post = PostModel(
-                userId: supabase.auth.currentUser!.id,
-                imageUrl: fileUrl,
-              );
-              final map = post.toMap();
-              await supabase.from(widget.mode.databaseName()).insert(map);
-              log("Post uploaded", name: "Post preview screen");
-            } catch (e, st) {
-              log(
-                "Post upload failed",
-                name: "Post preview screen",
-                error: e,
-                stackTrace: st,
-              );
-            }
-          },
-        );
+  void _uploadPost(VisibilityType? visiblity, {List<String>? visibleTo}) async {
+    await UtilVars.uploadPost(
+      filePath: widget.filePath!,
+      context: context,
+      mode: widget.mode,
+      isVideo: widget.isVideo,
+      visiblity: visiblity,
+      visibleUserId: visibleTo,
+    );
+    if (mounted && context.mounted) {
+      Navigator.popUntil(context, (route) => route.isFirst);
+    }
   }
 
   @override
@@ -108,18 +89,18 @@ class _PreviewScreenState extends State<PreviewScreen> {
             children: [
               SizedBox(
                 height: MediaQuery.of(context).size.height - 128,
-
                 child: previewWidget,
               ),
-              if (widget.mode == PostMode.story)
-                SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: 128,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: 128,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    InkWell(
+                      onTap: () => _uploadPost(null),
+                      child: Container(
                         decoration: BoxDecoration(
                           color: Colors.grey.shade900,
                           borderRadius: BorderRadius.all(Radius.circular(32)),
@@ -141,7 +122,15 @@ class _PreviewScreenState extends State<PreviewScreen> {
                           ],
                         ),
                       ),
-                      Container(
+                    ),
+                    InkWell(
+                      //add closefriends feature
+                      onTap:
+                          () => _uploadPost(
+                            VisibilityType.followersOnly,
+                            visibleTo: [],
+                          ),
+                      child: Container(
                         decoration: BoxDecoration(
                           color: Colors.grey.shade900,
                           borderRadius: BorderRadius.all(Radius.circular(32)),
@@ -171,56 +160,56 @@ class _PreviewScreenState extends State<PreviewScreen> {
                           ],
                         ),
                       ),
-                      CircleAvatar(
-                        radius: 22,
-                        backgroundColor: Colors.white,
-                        child: Transform.translate(
-                          offset: const Offset(
-                            -4,
-                            0,
-                          ), // this icon is not actully centred(dont know why)
-                          child: IconButton(
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                            onPressed: () {},
-                            icon: const Icon(
-                              Iconic.arrow_right,
-                              size: 16,
-                              color: Colors.black,
-                            ),
+                    ),
+                    CircleAvatar(
+                      radius: 22,
+                      backgroundColor: Colors.white,
+                      child: Transform.translate(
+                        offset: const Offset(
+                          -4,
+                          0,
+                        ), // this icon is not actully centred(dont know why) so we offset to center
+                        child: IconButton(
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          onPressed: () {},
+                          icon: const Icon(
+                            Iconic.arrow_right,
+                            size: 16,
+                            color: Colors.black,
                           ),
                         ),
                       ),
+                    ),
 
-                      SizedBox(width: 8),
-                    ],
-                  ),
+                    SizedBox(width: 8),
+                  ],
                 ),
+              ),
             ],
           ),
-          if (widget.mode == PostMode.story)
-            Positioned(
-              top: 10,
-              height: 80,
-              width: MediaQuery.of(context).size.width,
-              child: AppBar(
-                backgroundColor: Colors.transparent,
-                actionsPadding: EdgeInsets.zero,
-                leading: _buildActionIcon(() {
-                  Navigator.of(context).pop();
-                }, Iconic.cross),
-                actions:
-                    widget.mode != PostMode.story
-                        ? null
-                        : [
-                          _buildActionIcon(() {}, Iconic.text),
-                          _buildActionIcon(() {}, Iconic.sticker),
-                          _buildActionIcon(() {}, Iconic.music),
-                          _buildActionIcon(() {}, Iconic.star_octogram),
-                          _buildActionIcon(() {}, Icons.menu),
-                        ],
-              ),
+          Positioned(
+            top: 10,
+            height: 80,
+            width: MediaQuery.of(context).size.width,
+            child: AppBar(
+              backgroundColor: Colors.transparent,
+              actionsPadding: EdgeInsets.zero,
+              leading: _buildActionIcon(() {
+                Navigator.of(context).pop();
+              }, Iconic.cross),
+              actions:
+                  widget.mode != PostMode.story
+                      ? null
+                      : [
+                        _buildActionIcon(() {}, Iconic.text),
+                        _buildActionIcon(() {}, Iconic.sticker),
+                        _buildActionIcon(() {}, Iconic.music),
+                        _buildActionIcon(() {}, Iconic.star_octogram),
+                        _buildActionIcon(() {}, Icons.menu),
+                      ],
             ),
+          ),
         ],
       ),
     );

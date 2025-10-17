@@ -39,22 +39,20 @@ class UploadNotifier extends StateNotifier<List<UploadTaskState>> {
       final bucketName = mode.bucketName(isVideoPost: isVideoPost);
       final bucket = supabase.storage.from(bucketName);
 
-      // Unique file path
+      // Unique file path inside bucket
       final fileExt = file.path.split('.').last;
-      final path = "$userId/${Uuid().v4()}.$fileExt";
+      final path =
+          "$userId/${Uuid().v4()}.$fileExt"; // <-- this is the relative path
 
-      // Upload file with progress tracking
-      final uploadTask = bucket.upload(
-        path,
+      // Upload file
+      await bucket.upload(
+        path, // <-- use relative path only
         file,
         fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
       );
 
-      // Supabase Dart SDK doesn’t support real-time progress for mobile yet,
-      // but you can simulate or integrate your own progress updates if needed
-      // For now, we mark progress = 1.0 after completion
-      final uploadedPath = await uploadTask;
-      final downloadUrl = bucket.getPublicUrl(uploadedPath);
+      // Get public URL (use the same relative path, NOT uploadedPath)
+      final downloadUrl = bucket.getPublicUrl(path);
 
       // Update state with completed download URL
       state = [
@@ -68,6 +66,8 @@ class UploadNotifier extends StateNotifier<List<UploadTaskState>> {
           else
             state[i],
       ];
+
+      // Call next task if needed
       if (nextTask != null) {
         log("Upload completed, performing nextTask", name: "File uploader");
         nextTask(downloadUrl);

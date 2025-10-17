@@ -178,6 +178,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
         mainAxisSpacing: 4,
         childAspectRatio: 2 / 3,
       ),
+      shrinkWrap: true,
       // Add 1 for the camera icon
       itemCount: mediaItems.length + (hasMore ? 2 : 1),
       itemBuilder: (_, index) {
