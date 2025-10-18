@@ -1,12 +1,14 @@
 enum VisibilityType { everyone, followersOnly, specificUsers }
 
 class PostModel {
-  final String? id; // auto-generated
+  final String id;
   final String userId;
-  final String imageUrl; // can be image or video URL
-  final bool isReel; // true if this is a reel (video)
+  final String imageUrl;
+  final bool isReel;
   final String? caption;
   final int likeCount;
+  final int commentCount;
+  final int shareCount;
   final List<String>? tags;
   final List<String>? mentionsUsernames;
   final List<String>? mentionsUserIds; // auto-resolved
@@ -16,19 +18,55 @@ class PostModel {
   final DateTime? createdAt;
 
   PostModel({
-    this.id,
+    this.id = "",
     required this.userId,
     required this.imageUrl,
     this.isReel = false,
     this.likeCount = 0,
+    this.commentCount = 0,
+    this.shareCount = 0,
     this.caption,
     this.tags,
     this.mentionsUsernames,
     this.mentionsUserIds,
-    this.visibility = VisibilityType.everyone, // default
+    this.visibility = VisibilityType.everyone,
     this.visibleUserIds,
     this.createdAt,
   });
+
+  PostModel copyWith({
+    String? id,
+    String? userId,
+    String? imageUrl,
+    bool? isReel,
+    int? likeCount,
+    int? commentCount,
+    int? shareCount,
+    String? caption,
+    List<String>? tags,
+    List<String>? mentionsUsernames,
+    List<String>? mentionsUserIds,
+    VisibilityType? visibility,
+    List<String>? visibleUserIds,
+    DateTime? createdAt,
+  }) {
+    return PostModel(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      imageUrl: imageUrl ?? this.imageUrl,
+      isReel: isReel ?? this.isReel,
+      likeCount: likeCount ?? this.likeCount,
+      commentCount: commentCount ?? this.commentCount,
+      shareCount: shareCount ?? this.shareCount,
+      caption: caption ?? this.caption,
+      tags: tags ?? this.tags,
+      mentionsUsernames: mentionsUsernames ?? this.mentionsUsernames,
+      mentionsUserIds: mentionsUserIds ?? this.mentionsUserIds,
+      visibility: visibility ?? this.visibility,
+      visibleUserIds: visibleUserIds ?? this.visibleUserIds,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
 
   factory PostModel.fromMap(Map<String, dynamic> map) {
     final videoUrl = map['video_url'] as String?;
@@ -56,6 +94,8 @@ class PostModel {
       imageUrl: imageUrl!,
       isReel: isReel,
       likeCount: map['like_count'] ?? 0,
+      commentCount: map['comment_count'] ?? 0,
+      shareCount: map['share_count'] ?? 0,
       caption: map['caption'],
       tags: map['tags'] != null ? List<String>.from(map['tags']) : null,
       mentionsUsernames:
@@ -95,6 +135,8 @@ class PostModel {
       'mentions_usernames': mentionsUsernames,
       'mentions_user_ids': mentionsUserIds,
       'like_count': likeCount,
+      'comment_count': commentCount,
+      'share_count': shareCount,
       'visible': visibleList,
     };
 

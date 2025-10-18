@@ -53,4 +53,26 @@ class UtilVars {
           },
         );
   }
+
+  static Future<Map<String, dynamic>?> fetchCurrentUserProfile() async {
+    final currentUserId = Database.client.auth.currentUser?.id;
+    if (currentUserId == null) return null;
+    try {
+      final response =
+          await Database.client
+              .from('profiles')
+              .select()
+              .eq('id', currentUserId)
+              .maybeSingle();
+      return response;
+    } catch (e, st) {
+      log(
+        "Error fetching current user profile",
+        error: e,
+        stackTrace: st,
+        name: "Profile fetch",
+      );
+      return null;
+    }
+  }
 }

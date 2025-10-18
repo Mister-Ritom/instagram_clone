@@ -23,7 +23,7 @@ class Comment {
     id: map['id'],
     postId: map['post_id'],
     userId: map['user_id'],
-    content: map['content'],
+    content: map['text'],
     tags: map['tags'] != null ? List<String>.from(map['tags']) : null,
     mentionsUsernames:
         map['mentions_usernames'] != null
@@ -40,7 +40,7 @@ class Comment {
   Map<String, dynamic> toMap() => {
     'post_id': postId,
     'user_id': userId,
-    'content': content,
+    'text': content,
     'tags': tags,
     'mentions_usernames': mentionsUsernames,
     // do NOT include id or mentions_user_ids
